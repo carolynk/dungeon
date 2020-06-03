@@ -1,6 +1,8 @@
 import mylib
 import colors
-from rooms import Room, Person, Map
+from rooms import Room, Person, Map, Item
+
+inventory = []
 
 
 def create_dungeon():
@@ -22,6 +24,11 @@ def create_dungeon():
     # farm.doors['n'] = bunker
     # bunker.doors['w'] = control
 
+    # Add Items
+    hole = dungeon.get_room("The Hole")
+    rope = Item("Rope", "A long, sturdy rope")
+    hole.items.append(rope)
+
     return dungeon
 
 
@@ -33,6 +40,7 @@ def find_doors(room):
       where the player currently is
     """
     escape = True
+    direction = " "
     if 'e' in room.doors:
         direction = "east"
     elif 'w' in room.doors:
@@ -48,13 +56,14 @@ def find_doors(room):
     else:
         print("There are no doors")
 
+
 def get_menu():
     return """
 n - go north
 s - go south
 e - go east
 w - go west
-ask - ask the person a question
+l - look more closely
 """
 
 
@@ -69,7 +78,8 @@ def play():
     while ans != 'q':
         find_doors(current_room)
         print(colors.default)
-        ans = input("""\nWhat do you want to do? (type help to see options.) """)
+        ans = input("""What do you want to do? (type help to see options.) """)
+        print(" ")
         reply = " "
         if ans == "help":
             reply = get_menu()
@@ -79,6 +89,25 @@ def play():
             reply = colors.green + current_room.name + "\n" + colors.pink + current_room.description
         elif ans == "ask" and current_room.people:
             current_room.people[0].ask()
+        elif ans == "l" or ans == "look":
+            reply = "You look more closely and see:"
+            if not current_room.items:
+                reply = reply + " nothing"
+            for item in current_room.items:
+                reply = reply + " " + str(item.name)
+        elif ans == "take" or ans == "t":
+            if current_room.items:
+                reply = "You take the items in the room:"
+            else:
+                reply = "There are no items in the room to take."
+            for item in current_room.items:
+                reply = reply + " " + str(item.name)
+                current_room.items.pop()
+                inventory.append(item)
+        elif ans == "i":
+            reply = "Your bag contains:"
+            for item in inventory:
+                reply = reply + " " + item.name
         elif ans == "q":
             exit()
         else:

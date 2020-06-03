@@ -97,3 +97,19 @@ class Person:
         print("\n" + colors.pink + self.name + " replies: ")
         print(self.answers[int(ans) - 1])
         print("\n")
+
+
+class Item:
+    """
+    Attributes
+    ----------
+    name: string
+      name of the person
+    """
+
+    def __init__(self, name, desc):
+        """
+        Make an item
+        """
+        self.name = name
+        self.description = desc
