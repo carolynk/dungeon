@@ -7,24 +7,35 @@ inventory = []
 
 def create_dungeon():
     dungeon = Map()
+    
+    # Create Rooms
     dungeon.add_room("The Hole", "You have fallen down a hole into a dungeon.")
     dungeon.add_room("The Cave", "A dark cave. You can't see anything.")
-    falls = Room("Underground falls.", "A waterfall rushes from the ceiling.")
-    farm = Room("The Farm",
+    dungeon.add_room("The Falls.", "An underground waterfall rushes from the ceiling.")
+    dungeon.add_room("The Farm",
                 "Stairs lead to a light doorway. You the realize it is aboveground! Then cows, sheep, and some chicken signat it is a farm.")
-    bunker = Room("The Bunker",
+    dungeon.add_room("The Bunker",
                   "A long room with dozens of bunkbeds line the walls. They look long abandoned. Cobwebs are everywhere.")
-    control = Room("The Control center",
+    dungeon.add_room("The Control Center",
                    "There are three giant panels here with blinking lights and hundreds of knobs and buttons. There is what looks like a pilot seat facing a wide screen.")
+    dungeon.add_room("The Inhouse",
+                   "There are hundreds of toilets here. Some even with the carcus of fish, urine, and feces. Eww!")
 
+    # Add doors
     dungeon.add_door("The Hole", "The Cave", "e")
-    # hole.doors['e'] = cave
-    # cave.doors['n'] = falls
-    # falls.doors['s'] = farm
-    # farm.doors['n'] = bunker
-    # bunker.doors['w'] = control
+    dungeon.add_door("The Cave", "The Farm", "n")
+
+    # Control center doors
+    dungeon.add_door("The Control Center", "The Cave", "e")
+    dungeon.add_door("The Control Center", "The Falls", "n")
+    dungeon.add_door("The Control Center", "The Bunker", "s")
+    dungeon.add_door("The Control Center", "The Inhouse", "e")
 
     # Add Items
+    hole = dungeon.get_room("The Hole")
+    rope = Item("Rope", "A long, sturdy rope")
+    hole.items.append(rope)
+
     hole = dungeon.get_room("The Hole")
     rope = Item("Rope", "A long, sturdy rope")
     hole.items.append(rope)
@@ -39,22 +50,21 @@ def find_doors(room):
     room: Room
       where the player currently is
     """
-    escape = True
-    direction = " "
+    direction = ""
     if 'e' in room.doors:
         direction = "east"
-    elif 'w' in room.doors:
-        direction = "west"
-    elif 'n' in room.doors:
-        direction = "north"
-    elif 's' in room.doors:
-        direction = "south"
-    else:
-        escape = False
-    if escape:
+    if 'w' in room.doors:
+        direction = direction + " west"
+    if 'n' in room.doors:
+        direction = direction + " north"
+    if 's' in room.doors:
+        direction = direction + " south"
+
+    if room.doors:
         print(colors.orange + "There is a door to the " + direction)
     else:
         print("There are no doors")
+
 
 
 def get_menu():
@@ -90,7 +100,9 @@ def play():
         elif ans == "ask" and current_room.people:
             current_room.people[0].ask()
         elif ans == "l" or ans == "look":
-            reply = "You look more closely and see:"
+            print(colors.green + current_room.name)
+            print(colors.pink + current_room.description)
+            reply = colors.blue + "You look more closely and see:"
             if not current_room.items:
                 reply = reply + " nothing"
             for item in current_room.items:
