@@ -17,23 +17,29 @@ class Room:
     def __init__(self, name, desc):
         """
         Make a room
-        doors = name:direction
         """
         self.name = name
         self.description = desc
-        self.items = []
-        self.doors = {}
-        self.hidden_doors = {}
+        self.items = {}
+        self.doors = {}  # direction: new room name
+        self.hidden_doors = {}  # direction: new room name
+        self.locked = {}  # direction: name of item that unlocks it
         self.people = []
 
-    def add_neighbor(self, neighbor_name, direction):
+    def add_neighbor(self, neighbor_name, direction, locked=False, unlock=""):
         self.doors[direction] = neighbor_name
-    
-    def delete_neighbor(self, neighbor_name, direction):
+        if locked:
+            self.locked[direction] = unlock
+
+    def delete_neighbor(self, direction):
         self.doors.pop(direction)
 
     def add_hidden_neighbor(self, neighbor_name, direction):
         self.hidden_doors[direction] = neighbor_name
+
+    def add_item(self, name, desc=""):
+        new_item = Item(name, desc)
+        self.items[name] = new_item
 
 
 class Map:
@@ -43,7 +49,7 @@ class Map:
 
         """
         if not rooms:
-            rooms = {}
+            rooms = {} # name : room object
         self.rooms = rooms
 
     def add_room(self, name, desc=""):
@@ -53,9 +59,8 @@ class Map:
     def get_room(self, name):
         if name in self.rooms.keys():
             return self.rooms[name]
-        return None
 
-    def add_trap_door(self, fr, to, direction):
+    def add_trap_door(self, fr, to, direction, locked=False, unlock=""):
         """
         A directed edge between rooms
         """
@@ -63,7 +68,7 @@ class Map:
             self.add_room(fr)
         if self.get_room(to) is None:
             self.add_room(to)
-        self.get_room(fr).add_neighbor(to, direction)
+        self.get_room(fr).add_neighbor(to, direction, locked, unlock)
 
     def delete_trap_door(self, fr, to, direction):
         """
@@ -73,8 +78,8 @@ class Map:
             self.add_room(fr)
         if self.get_room(to) is None:
             self.add_room(to)
-        self.get_room(fr).delete_neighbor(to, direction)
-  
+        self.get_room(fr).delete_neighbor(direction)
+
     def add_hidden_trap_door(self, fr, to, direction):
         """
         A directed edge between rooms
@@ -85,10 +90,13 @@ class Map:
             self.add_room(to)
         self.get_room(fr).add_hidden_neighbor(to, direction)
 
-    def add_door(self, id1, id2, direction):
-        mirror = {"e": "w", "w": "e", "n": "s", "s": "n", "u": "d", "d": "u"}
-        self.add_trap_door(id1, id2, direction)
+    def add_door(self, id1, id2, direction, locked=False, unlock=""):
+        mirror = {"e": "w", "n": "s", "u": "d"}
+        mirror.update(dict((v, k) for (k, v) in mirror.items()))
+        self.add_trap_door(id1, id2, direction, locked, unlock)
         self.add_trap_door(id2, id1, mirror[direction])
+
+
 
     def add_hidden_door(self, id1, id2, direction):
         mirror = {"e": "w", "w": "e", "n": "s", "s": "n", "u": "d", "d": "u"}
@@ -96,7 +104,9 @@ class Map:
         self.add_trap_door(id2, id1, mirror[direction])
 
     def walk(self, fr, direction):
-        if direction in fr.doors.keys():
+        if direction in fr.locked.keys():
+            print("The door is locked.")
+        elif direction in fr.doors.keys():
             new_room = self.get_room(fr.doors[direction])
             return new_room
         elif direction in fr.hidden_doors.keys():
@@ -106,7 +116,7 @@ class Map:
             print("You can't go that way.")
 
 
-class Person:
+class NPC:
     """
     Attributes
     ----------
@@ -149,18 +159,20 @@ class Item:
         self.name = name
         self.description = desc
 
-class Inventory:
-      def __init__(self, items = None):
+
+class Player:
+    def __init__(self, items=None):
         """
         Make an item
         """
-        self.items = {}
-      
-      # def add_item(self, item,  desc="")
-      #   new_item = Item(name, desc)
-      #   self.items[name] = new_item
+        self.inventory = {}
+        self.turns = 0
 
-      def get_item(self, name):
-        if name in self.rooms.keys():
-            return self.rooms[name]
-        return None
+    def get_item(self, name):
+        if name in self.inventory.keys():
+            return self.inventory[name]
+
+    def add_item(self, name):
+        new_item = self.get_item(name)
+        self.inventory[name] = new_item
+
