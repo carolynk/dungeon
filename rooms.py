@@ -26,8 +26,10 @@ class Room:
         self.hidden_doors = {}
         self.people = []
 
-    def add_neighbor(self, neighbor_name, direction):
+    def add_neighbor(self, neighbor_name, direction, locked=False, unlock=""):
         self.doors[direction] = neighbor_name
+        if locked:
+            self.locked[direction] = unlock
     
     def delete_neighbor(self, neighbor_name, direction):
         self.doors.pop(direction)
@@ -55,7 +57,7 @@ class Map:
             return self.rooms[name]
         return None
 
-    def add_trap_door(self, fr, to, direction):
+    def add_trap_door(self, fr, to, direction, locked=False, unlock=""):
         """
         A directed edge between rooms
         """
@@ -63,7 +65,7 @@ class Map:
             self.add_room(fr)
         if self.get_room(to) is None:
             self.add_room(to)
-        self.get_room(fr).add_neighbor(to, direction)
+        self.get_room(fr).add_neighbor(to, direction, locked, unlock)
 
     def delete_trap_door(self, fr, to, direction):
         """
@@ -85,9 +87,10 @@ class Map:
             self.add_room(to)
         self.get_room(fr).add_hidden_neighbor(to, direction)
 
-    def add_door(self, id1, id2, direction):
-        mirror = {"e": "w", "w": "e", "n": "s", "s": "n", "u": "d", "d": "u"}
-        self.add_trap_door(id1, id2, direction)
+    def add_door(self, id1, id2, direction, locked=False, unlock=""):
+        mirror = {"e": "w", "n": "s", "u": "d"}
+        mirror.update(dict((v, k) for (k, v) in mirror.items()))
+        self.add_trap_door(id1, id2, direction, locked, unlock)
         self.add_trap_door(id2, id1, mirror[direction])
 
     def add_hidden_door(self, id1, id2, direction):
