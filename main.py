@@ -1,5 +1,5 @@
 import colors
-from rooms import Map, Item, Player
+from rooms import Map, Player
 # from rooms import NPC
 
 inventory = []
@@ -24,6 +24,8 @@ def create_dungeon():
     dungeon.add_room("The Treasure Palace",
                      "'Am I rich?' you ask yourself as you see a room full of treasure, including gold, silver, "
                      "diamonds!")
+    dungeon.add_room("Hunger",
+                     "A lion is")
 
     # Above ground
     dungeon.add_room("The Farm",
@@ -36,12 +38,13 @@ def create_dungeon():
     dungeon.add_room("The Roadside",
                      "There is an old dirt road here with a shiny lime Lamborghini. Your best friend is standing next "
                      "to it.")
+    
 
     # Add doors
     dungeon.add_door("The Hole", "The Cave", "e")
     dungeon.add_door("The Cave", "The Farm", "u")
 
-    # Add hiddendoor
+    # Add hidden doors
     dungeon.add_hidden_door("The Falls", "The Treasure Palace", "e")
 
     # Control center doors
@@ -51,33 +54,32 @@ def create_dungeon():
     dungeon.add_door("The Control Center", "The Inhouse", "e")
 
     # Create inventory
-    # inventory = Inventory()
 
     # Add Items
     hole = dungeon.get_room("The Hole")
-    # rope = Item("Rope", "A long, sturdy rope")
-    # hole.items.append(rope)
     hole.add_item("Rope", "A long, sturdy rope")
-    #
-    # farm = dungeon.get_room("The Farm")
-    # meat = Item("Meat", "A chunk of thick juicy meat")
-    # farm.items.append(meat)
-    #
-    # inhouse = dungeon.get_room("The Inhouse")
-    # plunger = Item("Plunger", "A long skinny stick, with a rubber suction thing at the end")
-    # inhouse.items.append(plunger)
-    #
-    # control_center = dungeon.get_room("The Control Center")
-    # diagram = Item("diagram", "A map of the place")
-    # control_center.items.append(diagram)
-    #
-    # bunker = dungeon.get_room("The Bunker")
-    # key = Item("key", "A " + colors.cyan + "cyan" + colors.blue + "key, looks like it would go in a fancy door lock")
-    # bunker.items.append(key)
-    #
-    # cave = dungeon.get_room("The Cave")
-    # alarm_clock = Item("clock", "A old fashioned lime green alarm clock.")
-    # cave.items.append(alarm_clock)
+    
+    cave = dungeon.get_room("The Cave")
+    cave.add_item("clock", "A old fashioned lime green alarm clock.")
+
+    farm = dungeon.get_room("The Farm")
+    farm.add_item("Meat", "A chunk of thick juicy meat")
+    
+    inhouse = dungeon.get_room("The Inhouse")
+    inhouse.add_item("Plunger", "A long skinny stick, with a rubber suction thing at the end")
+    
+    control_center = dungeon.get_room("The Control Center")
+    control_center.add_item("diagram", "A map of the place")
+    
+    bunker = dungeon.get_room("The Bunker")
+    bunker.add_item("key", "A " + colors.cyan + "cyan" + colors.blue + "key, looks like it would go in a fancy door lock")
+    
+    treasure_palace = dungeon.get_room("The Treasure Palace")
+    treasure_palace.add_item("Gold", "A stack of gold bars. You can barely manage to pick it up, but a cart eases the load.")
+    treasure_palace.add_item("Silver", "A pile of shiny silver coins. A mirror made of silver is")
+    treasure_palace.add_item("Diamonds", "A string of diamond that can be worn like a tennis braclet.")
+
+    
 
     return dungeon
 
@@ -124,18 +126,26 @@ def above_ground(dungeon, turns):
         dungeon.add_trap_door("The Lake-Mere", "The Cave", "d")
         if turns == 3:
             print("The opening below is slowly closing.")
+        if turns == 0:
+            dungeon.delete_trap_door("The Forest", "The Cave", "d")
     elif 3 < turns <= 6:
         dungeon.add_trap_door("The Farm", "The Cave", "d")
         if turns == 6:
             print("The opening below is slowly closing.")
-    elif 6 < turns <= 9:
-        dungeon.add_trap_door("Roadside", "The Cave", "d")
-        if turns == 9:
-            print("The opening below is slowly closing.")
+        if turns == 4:
+            dungeon.delete_trap_door("The Lake-Mere", "The Cave", "d")
+    # elif 6 < turns <= 9:
+    #     dungeon.add_trap_door("Roadside", "The Cave", "d")
+    #     if turns == 9:
+    #         print("The opening below is slowly closing.")
+    elif turns == 7:
+        dungeon.delete_trap_door("The Farm", "The Cave", "d")
     else:
         dungeon.add_trap_door("The Forest", "The Cave", "d")
         if turns == 12:
             print("The opening below is slowly closing.")
+        # if turns == 10:
+        #     dungeon.delete_trap_door("Roadside", "The Cave", "d")
 
 
 def get_menu():
@@ -171,7 +181,7 @@ def play():
         elif 3 < turns <= 6:
             dungeon.add_trap_door("The Cave", "The Farm", "u")
         elif 6 < turns <= 9:
-            dungeon.add_trap_door("The Cave", "Roadside", "u")
+            dungeon.add_trap_door("The Cave", "Roadside", "u",locked = True)
         else:
             dungeon.add_trap_door("The Cave", "The Forest", "u")
 
@@ -234,6 +244,9 @@ def play():
             print("There you are!' they say. 'I've been looking for you for " + str(
                 turns + 1) + "Hours!!! 'Let's get out of here, this place is giving me the creeps.' \n You escaped. "
                              "\n \n " + colors.green + "THE END.")
+
+# TODO add monsters
+# hungry lion, have to give meat to get away
 
 
 play()

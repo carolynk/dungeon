@@ -41,6 +41,7 @@ class Room:
         new_item = Item(name, desc)
         self.items[name] = new_item
 
+    # TODO: Add find doors
 
 class Map:
     def __init__(self, rooms=None):
