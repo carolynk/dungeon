@@ -111,7 +111,7 @@ class Map:
         for item in i:
           if item in fr.locked.values():
             keycard = True
-        if direction in fr.locked.keys() and keycard is False:
+        if direction in fr.locked.keys() and not keycard:
             print("The door is locked.")
         elif direction in fr.doors.keys():
             new_room = self.get_room(fr.doors[direction])
