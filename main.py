@@ -14,8 +14,7 @@ def create_dungeon():
     dungeon.add_room("The Cave", "A dark cave. You can't see anything.")
     dungeon.add_room("The Falls", "An underground waterfall to the east rushes from the ceiling.")
     dungeon.add_room("The Bunker",
-                     "A long room with dozens of bunkers line the walls. They look long abandoned. Cobwebs are "
-                     "everywhere.")
+                     "A long room with dozens of bunkers line the walls. They look long abandoned. Cobwebs are everywhere.")
     dungeon.add_room("The Control Center",
                      "There are three giant panels here with blinking lights and hundreds of knobs and buttons. There "
                      "is what looks like a pilot seat facing a wide screen.")
@@ -25,12 +24,11 @@ def create_dungeon():
                      "'Am I rich?' you ask yourself as you see a room full of treasure, including gold, silver, "
                      "diamonds!")
     dungeon.add_room("Hunger",
-                     "A lion is")
+                     "A lion is now blocking the exit, and you hear a large stomach growl")
 
     # Above ground
     dungeon.add_room("The Farm",
-                     "Stairs lead to a light doorway. You the realize it is above ground! Then cows, sheep, and some "
-                     "chicken signal it is a farm. You shouldn't stay here long.")
+                     "Stairs lead to a light doorway. You the realize it is above ground! Then cows, sheep, and some chicken signal it is a farm. You shouldn't stay here long.")
     dungeon.add_room("The Lake-Mere",
                      "A polluted waterfall runs down a smokestack. You shouldn't stay here long.")
     dungeon.add_room("The Forest",
@@ -42,10 +40,10 @@ def create_dungeon():
 
     # Add doors
     dungeon.add_door("The Hole", "The Cave", "e")
-    dungeon.add_door("The Cave", "The Farm", "u")
+    # dungeon.add_door("The Cave", "The Farm", "u")
 
     # Add hidden doors
-    dungeon.add_hidden_door("The Falls", "The Treasure Palace", "e")
+    dungeon.add_door("The Falls", "The Treasure Palace", "e", locked = True, unlock="key")
 
     # Control center doors
     dungeon.add_door("The Control Center", "The Cave", "w")
@@ -134,18 +132,18 @@ def above_ground(dungeon, turns):
             print("The opening below is slowly closing.")
         if turns == 4:
             dungeon.delete_trap_door("The Lake-Mere", "The Cave", "d")
-    # elif 6 < turns <= 9:
-    #     dungeon.add_trap_door("Roadside", "The Cave", "d")
-    #     if turns == 9:
-    #         print("The opening below is slowly closing.")
+    elif 6 < turns <= 9:
+        dungeon.add_trap_door("Roadside", "The Cave", "d")
+        if turns == 9:
+            print("The opening below is slowly closing.")
     elif turns == 7:
         dungeon.delete_trap_door("The Farm", "The Cave", "d")
     else:
         dungeon.add_trap_door("The Forest", "The Cave", "d")
         if turns == 12:
             print("The opening below is slowly closing.")
-        # if turns == 10:
-        #     dungeon.delete_trap_door("Roadside", "The Cave", "d")
+        if turns == 10:
+            dungeon.delete_trap_door("Roadside", "The Cave", "d")
 
 
 def get_menu():
@@ -181,7 +179,8 @@ def play():
         elif 3 < turns <= 6:
             dungeon.add_trap_door("The Cave", "The Farm", "u")
         elif 6 < turns <= 9:
-            dungeon.add_trap_door("The Cave", "Roadside", "u",locked = True)
+            dungeon.delete_trap_door("The Cave", "The Farm", "u")
+            dungeon.add_trap_door("The Cave", "Roadside", "u", locked = True)
         else:
             dungeon.add_trap_door("The Cave", "The Forest", "u")
 
@@ -191,8 +190,8 @@ def play():
         if ans == "help":
             reply = get_menu()
         elif ans == "e" or ans == "w" or ans == "n" or ans == "s" or ans == "u" or ans == "d":
-            if dungeon.walk(current_room, ans) is not None:
-                current_room = dungeon.walk(current_room, ans)
+            if dungeon.walk(current_room, ans, inventory) is not None:
+                current_room = dungeon.walk(current_room, ans, inventory)
         elif ans == "ask" and current_room.people:
             current_room.people[0].ask()
         elif ans == "l" or ans == "look":

@@ -26,16 +26,20 @@ class Room:
         self.locked = {}  # direction: name of item that unlocks it
         self.people = []
 
-    def add_neighbor(self, neighbor_name, direction, locked=False, unlock=""):
-        self.doors[direction] = neighbor_name
+    def add_neighbor(self, neighbor_name, direction, hidden, locked, unlock):
+        if hidden:
+            self.hidden_doors[direction] = neighbor_name
+        else:
+            self.doors[direction] = neighbor_name
         if locked:
             self.locked[direction] = unlock
 
     def delete_neighbor(self, direction):
-        self.doors.pop(direction)
+        if direction in self.doors:
+          self.doors.pop(direction)
 
-    def add_hidden_neighbor(self, neighbor_name, direction):
-        self.hidden_doors[direction] = neighbor_name
+    # def add_hidden_neighbor(self, neighbor_name, direction):
+    #     self.hidden_doors[direction] = neighbor_name
 
     def add_item(self, name, desc=""):
         new_item = Item(name, desc)
@@ -61,7 +65,7 @@ class Map:
         if name in self.rooms.keys():
             return self.rooms[name]
 
-    def add_trap_door(self, fr, to, direction, locked=False, unlock=""):
+    def add_trap_door(self, fr, to, direction, locked=False, unlock=None, hidden=False):
         """
         A directed edge between rooms
         """
@@ -69,16 +73,16 @@ class Map:
             self.add_room(fr)
         if self.get_room(to) is None:
             self.add_room(to)
-        self.get_room(fr).add_neighbor(to, direction, locked, unlock)
+        self.get_room(fr).add_neighbor(to, direction, locked, unlock, hidden)
 
     def delete_trap_door(self, fr, to, direction):
         """
         A directed edge between rooms
         """
-        if self.get_room(fr) is None:
-            self.add_room(fr)
-        if self.get_room(to) is None:
-            self.add_room(to)
+        # if self.get_room(fr) is None:
+        #     self.add_room(fr)
+        # if self.get_room(to) is None:
+        #     self.add_room(to)
         self.get_room(fr).delete_neighbor(direction)
 
     def add_hidden_trap_door(self, fr, to, direction):
@@ -91,21 +95,23 @@ class Map:
             self.add_room(to)
         self.get_room(fr).add_hidden_neighbor(to, direction)
 
-    def add_door(self, id1, id2, direction, locked=False, unlock=""):
+    def add_door(self, id1, id2, direction, hidden=False, locked=False, unlock=""):
         mirror = {"e": "w", "n": "s", "u": "d"}
         mirror.update(dict((v, k) for (k, v) in mirror.items()))
-        self.add_trap_door(id1, id2, direction, locked, unlock)
-        self.add_trap_door(id2, id1, mirror[direction])
-
-
+        self.add_trap_door(id1, id2, direction, hidden, locked, unlock)
+        self.add_trap_door(id2, id1, mirror[direction], hidden)
 
     def add_hidden_door(self, id1, id2, direction):
         mirror = {"e": "w", "w": "e", "n": "s", "s": "n", "u": "d", "d": "u"}
         self.add_hidden_trap_door(id1, id2, direction)
         self.add_trap_door(id2, id1, mirror[direction])
 
-    def walk(self, fr, direction):
-        if direction in fr.locked.keys():
+    def walk(self, fr, direction, i):
+        keycard = False
+        for item in i:
+          if item in fr.locked.values():
+            keycard = True
+        if direction in fr.locked.keys() and keycard is False:
             print("The door is locked.")
         elif direction in fr.doors.keys():
             new_room = self.get_room(fr.doors[direction])
