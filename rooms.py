@@ -183,3 +183,4 @@ class Player:
         new_item = self.get_item(name)
         self.inventory[name] = new_item
 
+lambda
