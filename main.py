@@ -1,5 +1,6 @@
 import colors
 from rooms import Map, Player
+
 # from rooms import NPC
 
 inventory = []
@@ -14,7 +15,8 @@ def create_dungeon():
     dungeon.add_room("The Cave", "A dark cave. You can't see anything.")
     dungeon.add_room("The Falls", "An underground waterfall to the east rushes from the ceiling.")
     dungeon.add_room("The Bunker",
-                     "A long room with dozens of bunkers line the walls. They look long abandoned. Cobwebs are everywhere.")
+                     "A long room with dozens of bunkers line the walls. They look long abandoned. Cobwebs are "
+                     "everywhere.")
     dungeon.add_room("The Control Center",
                      "There are three giant panels here with blinking lights and hundreds of knobs and buttons. There "
                      "is what looks like a pilot seat facing a wide screen.")
@@ -28,7 +30,8 @@ def create_dungeon():
 
     # Above ground
     dungeon.add_room("The Farm",
-                     "Stairs lead to a light doorway. You the realize it is above ground! Then cows, sheep, and some chicken signal it is a farm. You shouldn't stay here long.")
+                     "Stairs lead to a light doorway. You the realize it is above ground! Then cows, sheep, and some "
+                     "chicken signal it is a farm. You shouldn't stay here long.")
     dungeon.add_room("The Lake-Mere",
                      "A polluted waterfall runs down a smokestack. You shouldn't stay here long.")
     dungeon.add_room("The Forest",
@@ -36,14 +39,13 @@ def create_dungeon():
     dungeon.add_room("The Roadside",
                      "There is an old dirt road here with a shiny lime Lamborghini. Your best friend is standing next "
                      "to it.")
-    
 
     # Add doors
     dungeon.add_door("The Hole", "The Cave", "e")
     # dungeon.add_door("The Cave", "The Farm", "u")
 
     # Add hidden doors
-    dungeon.add_door("The Falls", "The Treasure Palace", "e", locked = True, unlock="key")
+    dungeon.add_door("The Falls", "The Treasure Palace", "e", locked=True, unlock="key")
 
     # Control center doors
     dungeon.add_door("The Control Center", "The Cave", "w")
@@ -56,28 +58,30 @@ def create_dungeon():
     # Add Items
     hole = dungeon.get_room("The Hole")
     hole.add_item("Rope", "A long, sturdy rope")
-    
+    hole.add_gold(1)
+
     cave = dungeon.get_room("The Cave")
     cave.add_item("clock", "A old fashioned lime green alarm clock.")
 
     farm = dungeon.get_room("The Farm")
     farm.add_item("Meat", "A chunk of thick juicy meat")
-    
+
     inhouse = dungeon.get_room("The Inhouse")
     inhouse.add_item("Plunger", "A long skinny stick, with a rubber suction thing at the end")
-    
+
     control_center = dungeon.get_room("The Control Center")
     control_center.add_item("diagram", "A map of the place")
-    
+
     bunker = dungeon.get_room("The Bunker")
-    bunker.add_item("key", "A " + colors.cyan + "cyan" + colors.blue + "key, looks like it would go in a fancy door lock")
-    
+    bunker.add_item("key", "A " + colors.cyan + "cyan" + colors.blue + "key, looks like it would go in a fancy door "
+                                                                       "lock")
+
     treasure_palace = dungeon.get_room("The Treasure Palace")
-    treasure_palace.add_item("Gold", "A stack of gold bars. You can barely manage to pick it up, but a cart eases the load.")
+    treasure_palace.add_item("Gold", "A stack of gold bars. You can barely manage to pick it up, but a cart eases the "
+                                     "load.")
     treasure_palace.add_item("Silver", "A pile of shiny silver coins. A mirror made of silver is")
     treasure_palace.add_item("Diamonds", "A string of diamond that can be worn like a tennis braclet.")
-
-    
+    treasure_palace.add_gold(10)
 
     return dungeon
 
@@ -152,11 +156,11 @@ n - go north
 s - go south
 e - go east
 w - go west
+u - go upward
+d - go downwards
 l - look more closely
 t - take all
 i - inventory
-u - up
-d - down
 """
 
 
@@ -180,13 +184,16 @@ def play():
             dungeon.add_trap_door("The Cave", "The Farm", "u")
         elif 6 < turns <= 9:
             dungeon.delete_trap_door("The Cave", "The Farm", "u")
-            dungeon.add_trap_door("The Cave", "Roadside", "u", locked = True)
+            dungeon.add_trap_door("The Cave", "Roadside", "u", locked=True)
+            print("The alarm clock is ringing loudly and shaking.")
         else:
             dungeon.add_trap_door("The Cave", "The Forest", "u")
 
         find_doors(current_room)
         ans = input(colors.default + """> """)
         reply = ""
+        if ans == "debug":
+            print(current_room)
         if ans == "help":
             reply = get_menu()
         elif ans == "e" or ans == "w" or ans == "n" or ans == "s" or ans == "u" or ans == "d":
@@ -243,6 +250,7 @@ def play():
             print("There you are!' they say. 'I've been looking for you for " + str(
                 turns + 1) + "Hours!!! 'Let's get out of here, this place is giving me the creeps.' \n You escaped. "
                              "\n \n " + colors.green + "THE END.")
+
 
 # TODO add monsters
 # hungry lion, have to give meat to get away

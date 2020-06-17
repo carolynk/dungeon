@@ -26,7 +26,13 @@ class Room:
         self.locked = {}  # direction: name of item that unlocks it
         self.people = []
 
-    def add_neighbor(self, neighbor_name, direction, hidden, locked, unlock):
+    def __str__(self):
+        return "{}\n=====\n{}\nItems: {}\nDoors: {}\n" \
+               "Hidden Doors: {}\nLockedDoors: {}\nPeople: {}\n" \
+               "".format(self.name, self.description, self.items, self.doors,
+                         self.hidden_doors, self.locked, self.people)
+
+    def add_neighbor(self, neighbor_name, direction, locked, unlock, hidden):
         if hidden:
             self.hidden_doors[direction] = neighbor_name
         else:
@@ -36,7 +42,7 @@ class Room:
 
     def delete_neighbor(self, direction):
         if direction in self.doors:
-          self.doors.pop(direction)
+            self.doors.pop(direction)
 
     # def add_hidden_neighbor(self, neighbor_name, direction):
     #     self.hidden_doors[direction] = neighbor_name
@@ -45,7 +51,12 @@ class Room:
         new_item = Item(name, desc)
         self.items[name] = new_item
 
+    def add_gold(self, amt):
+        gold = Gold(amt)
+        self.items["gold coin"] = gold
+
     # TODO: Add find doors
+
 
 class Map:
     def __init__(self, rooms=None):
@@ -54,7 +65,7 @@ class Map:
 
         """
         if not rooms:
-            rooms = {} # name : room object
+            rooms = {}  # name : room object
         self.rooms = rooms
 
     def add_room(self, name, desc=""):
@@ -109,8 +120,8 @@ class Map:
     def walk(self, fr, direction, i):
         keycard = False
         for item in i:
-          if item in fr.locked.values():
-            keycard = True
+            if item in fr.locked.values():
+                keycard = True
         if direction in fr.locked.keys() and keycard is False:
             print("The door is locked.")
         elif direction in fr.doors.keys():
@@ -166,6 +177,16 @@ class Item:
         self.name = name
         self.description = desc
 
+    def __str__(self):
+        return "{}\n=====\n{}\n".format(self.name, self.description)
+
+
+class Gold(Item):
+    def __init__(self, amt):
+        self.amt = amt
+        super().__init__(name="Gold",
+                         desc="A round coin with {} stamped on the front.".format(str(self.amt)))
+
 
 class Player:
     def __init__(self, items=None):
@@ -182,4 +203,3 @@ class Player:
     def add_item(self, name):
         new_item = self.get_item(name)
         self.inventory[name] = new_item
-
