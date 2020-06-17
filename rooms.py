@@ -109,7 +109,7 @@ class Map:
     def add_door(self, id1, id2, direction, hidden=False, locked=False, unlock=""):
         mirror = {"e": "w", "n": "s", "u": "d"}
         mirror.update(dict((v, k) for (k, v) in mirror.items()))
-        self.add_trap_door(id1, id2, direction, hidden, locked, unlock)
+        self.add_trap_door(id1, id2, direction, locked, unlock, hidden)
         self.add_trap_door(id2, id1, mirror[direction], hidden)
 
     def add_hidden_door(self, id1, id2, direction):
@@ -118,11 +118,11 @@ class Map:
         self.add_trap_door(id2, id1, mirror[direction])
 
     def walk(self, fr, direction, i):
-        keycard = False
+        keycard = 0
         for item in i:
             if item in fr.locked.values():
-                keycard = True
-        if direction in fr.locked.keys() and keycard is False:
+                keycard = 1
+        if direction in fr.locked.keys() and not keycard:
             print("The door is locked.")
         elif direction in fr.doors.keys():
             new_room = self.get_room(fr.doors[direction])

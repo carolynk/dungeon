@@ -41,11 +41,11 @@ def create_dungeon():
                      "to it.")
 
     # Add doors
-    dungeon.add_door("The Hole", "The Cave", "e")
+    dungeon.add_door("The Hole", "The Cave", "e", locked=True, unlock="Rope")
     # dungeon.add_door("The Cave", "The Farm", "u")
 
     # Add hidden doors
-    dungeon.add_door("The Falls", "The Treasure Palace", "e", locked=True, unlock="key")
+    dungeon.add_door("The Falls", "The Treasure Palace", "e", locked=True, unlock="key", hidden=True)
 
     # Control center doors
     dungeon.add_door("The Control Center", "The Cave", "w")
