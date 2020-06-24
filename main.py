@@ -2,7 +2,6 @@ import colors
 from rooms import Map, Player
 
 # from rooms import NPC
-
 inventory = []
 
 
@@ -218,7 +217,8 @@ def play():
             for item in current_room.items:
                 reply = reply + "\n" + item
                 inventory.append(item)
-            current_room.items.pop(item)
+            if item in current_room.items:
+                current_room.items.pop(item)
 
         elif ans == "i":
             reply = "Your bag contains:"
@@ -251,8 +251,8 @@ def play():
 
         if current_room.name == "Roadside":
             print("There you are!' they say. 'I've been looking for you for " + str(
-                turns + 1) + "Hours!!! 'Let's get out of here, this place is giving me the creeps.' \n You escaped. "
-                             "\n \n " + colors.green + "THE END.")
+                turns + 1) + "hours!!! 'Let's get out of here, this place is giving me the creeps.'\nYou escaped. "
+                             "\n \n" + colors.green + "THE END.")
 
 
 # TODO add monsters
