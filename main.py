@@ -41,9 +41,9 @@ def create_dungeon():
                      "to it.")
 
     # Add doors
-    dungeon.add_door("The Hole", "The Cave", "e", locked=True, unlock="Rope")
-    # dungeon.add_door("The Cave", "The Farm", "u")
-
+    dungeon.add_door("The Hole", "The Cave", "e")
+    dungeon.add_trap_door("The Treasure Palace", "Hunger", "u", locked=True, unlock="Rope")
+    dungeon.add_trap_door("Hunger", "The Treasure Palace", "d", locked=True, unlock="Meat")
     # Add hidden doors
     dungeon.add_door("The Falls", "The Treasure Palace", "e", locked=True, unlock="key", hidden=True)
 
@@ -61,24 +61,25 @@ def create_dungeon():
     hole.add_gold(1)
 
     cave = dungeon.get_room("The Cave")
-    cave.add_item("clock", "A old fashioned lime green alarm clock.")
+    cave.add_item("clock", "A old fashioned " + colors.green + "lime green " + colors.cyan + "alarm clock.")
 
     farm = dungeon.get_room("The Farm")
     farm.add_item("Meat", "A chunk of thick juicy meat")
 
     inhouse = dungeon.get_room("The Inhouse")
-    inhouse.add_item("Plunger", "A long skinny stick, with a rubber suction thing at the end")
+    inhouse.add_item("Mop", "A large mop.")
+
+    hunger = dungeon.get_room("Hunger")
+    hunger.add_item("Bucket", "A large metal bucket with a handle over the top.")
 
     control_center = dungeon.get_room("The Control Center")
-    control_center.add_item("diagram", "A map of the place")
+    control_center.add_item("Map", "A map of the place")
 
     bunker = dungeon.get_room("The Bunker")
-    bunker.add_item("key", "A " + colors.cyan + "cyan" + colors.blue + "key, looks like it would go in a fancy door "
-                                                                       "lock")
+    bunker.add_item("key", "A " + colors.cyan + "cyan" + colors.blue + "key, looks like it would go in a fancy door lock")
 
     treasure_palace = dungeon.get_room("The Treasure Palace")
-    treasure_palace.add_item("Gold", "A stack of gold bars. You can barely manage to pick it up, but a cart eases the "
-                                     "load.")
+    treasure_palace.add_item("Gold", "A stack of gold bars. You can barely manage to pick it up, but a cart eases the load.")
     treasure_palace.add_item("Silver", "A pile of shiny silver coins. A mirror made of silver is")
     treasure_palace.add_item("Diamonds", "A string of diamond that can be worn like a tennis braclet.")
     treasure_palace.add_gold(10)
@@ -181,12 +182,14 @@ def play():
         if turns <= 3:
             dungeon.add_trap_door("The Cave", "The Lake-Mere", "u")
         elif 3 < turns <= 6:
+            dungeon.delete_trap_door("The Cave", "The Lake-Mere", "u")
             dungeon.add_trap_door("The Cave", "The Farm", "u")
         elif 6 < turns <= 9:
             dungeon.delete_trap_door("The Cave", "The Farm", "u")
-            dungeon.add_trap_door("The Cave", "Roadside", "u", locked=True)
+            dungeon.add_trap_door("The Cave", "Roadside", "u", locked=True, unlock="key")
             print("The alarm clock is ringing loudly and shaking.")
         else:
+            dungeon.delete_trap_door("The Cave", "The Roadside", "u")
             dungeon.add_trap_door("The Cave", "The Forest", "u")
 
         find_doors(current_room)
