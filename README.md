@@ -1,3 +1,3 @@
 # Dungeon
 
-Library for creating a text-based adventure game. Main contains a sample game.
+Library for creating text-based adventure games. Main contains a sample game.
